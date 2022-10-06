@@ -1,4 +1,3 @@
-
 def score_word(valid_words): 
     """This scores words according to the score function provided"""
 
@@ -24,6 +23,6 @@ def score_word(valid_words):
                     score_list.append(score)
                     break
         
-        return score_list
+    return score_list
 
 #This can be done using a list comprehension
