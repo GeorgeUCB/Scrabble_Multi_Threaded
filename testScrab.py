@@ -22,7 +22,7 @@ def main() :
     #First, count up the quantity of each letter in the "player_rack"
     player_rack = dict(Counter(list(args[1].upper())))
     
-    #player_rack = dict(Counter("C*A?".upper()))
+    #player_rack = dict(Counter("C*AA?".upper()))
     
     for word in sowpods: 
         #Append the valid word to valid_words list if checkvalid returns true
