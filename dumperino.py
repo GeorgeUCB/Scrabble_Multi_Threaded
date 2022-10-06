@@ -2,6 +2,9 @@ from collections import Counter
 from multiprocessing import Semaphore
 from pdb import Restart
 
+import sys
+args = sys.argv
+
 with open('sowpods.txt') as fin:
     lines = (word.strip().upper() for word in fin)
     words = [(word, Counter(word)) for word in lines]
@@ -21,10 +24,10 @@ for scrabble_word, letter_count in words:
 # After the word/score dictionary is built, print it 
 
 #First, count up the quantity of each letter in the "player_rack"
-
 player_rack = Counter(list(args[1].upper()))
 
-print(player_rack)
+#Get the next word from sowpods
+
 
 
 

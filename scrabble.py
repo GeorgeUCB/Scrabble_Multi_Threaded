@@ -22,7 +22,7 @@ def main():
                     
                     player_rack.pop(player_rack.index(rack_letter))
                     
-                    if counter == len(word) and len(word) <= len(args[1]) +1:
+                    if counter == len(word) and len(word) <= len(args[1]):
                         valid_words.append(word)
                         break
                     

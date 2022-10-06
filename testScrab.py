@@ -1,6 +1,9 @@
 import wordscore
 import sys
 import copy
+
+import time
+
 from collections import Counter
 
 # Implement a buy/spend system. 
@@ -18,6 +21,8 @@ def main() :
 
     #First, count up the quantity of each letter in the "player_rack"
     player_rack = dict(Counter(list(args[1].upper())))
+    
+    #player_rack = dict(Counter("C*A?".upper()))
     
     for word in sowpods: 
         #Append the valid word to valid_words list if checkvalid returns true
@@ -48,15 +53,18 @@ def checkvalid(word, player_rack):
     
     for count, letter in enumerate(word):
         #check if letter is in the player rack at all, if is it must also be affordable by word   
+        #If the player_rack letter is a wildcard, 
         if letter in player_rack.keys() and word[letter] <= player_rack[letter]:
-            used_letters.append(letter)  #append to our used letters
-
-            if count == len(word)-1 :
-                #unused_letters = copy.deepcopy(word)
-                #del unused_letters[used_letters]
-                print(sum(word.values()), total_wildcards, len(used_letters))
+            if count == len(word)-1 and total_wildcards <= 0 :
                 return True
-
+            
+        elif word[letter] <= total_wildcards:
+            total_wildcards -= word[letter]
+            if total_wildcards < 0: 
+                return False
+            elif count == len(word) - 1:
+                return True
+        
         else:
             return False
 
@@ -82,4 +90,6 @@ def openfile(filename):
     return file_content
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
