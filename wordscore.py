@@ -9,6 +9,9 @@ def score_word(valid_words):
 
     score_list = []
 
+    # Itterates through the list of valid words
+    # matching the letter with the corresponding score
+    # and summing it to score
     for word in valid_words:
         score = 0
         counter = 0
@@ -18,11 +21,9 @@ def score_word(valid_words):
                 if letter.upper() == character:
                     score = score + value
                     counter += 1
-
+                # Check if we've reached the end of word
                 if counter == len(word):
                     score_list.append(score)
                     break
         
     return score_list
-
-#This can be done using a list comprehension

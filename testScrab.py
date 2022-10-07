@@ -1,85 +1,94 @@
-import wordscore
 import sys
-import copy
-
-import time
-
+from wordscore import score_word
 from collections import Counter
 
-# Implement a buy/spend system. 
-# Word from sowpods needs to "buy" letters from the "player_rack". 
-# A wildcard will allow word from sowpods to buy the space with any letter it has
-# If Word can affor it, it gets to be a valid word and gets sent for score processings
-# After the word/score dictionary is built, print it 
 
+"""Get arguments from command line,
+    check to see if len(args) is in expected range
+    otherwise print usage and exit""" 
 args = sys.argv
 
-def main() : 
+if len(args) > 2:
+    print("Usage: python scrabble.py <rack> ")
+    sys.exit(1)
+
+def run_scrabble() : 
+    """Begins running the scrabble program"""
     
-    sowpods = openfile("sowpods.txt")
+    # Load the sowpods text file, initialize a valid words list
+    sowpods = open_file("sowpods.txt")
     valid_words = []
 
-    #First, count up the quantity of each letter in the "player_rack"
+    # Creat a dictionary with the occurence of letter in the player_rack
     player_rack = dict(Counter(list(args[1].upper())))
     
-    #player_rack = dict(Counter("C*AA?".upper()))
-    
+    # Begin itteration through sowpods, checking if they are valid words
     for word in sowpods: 
-        #Append the valid word to valid_words list if checkvalid returns true
-        if checkvalid(word, player_rack):
+        if check_valid(word, player_rack):
+            # Append valid words found to valid_words list
             valid_words.append(word)
      
-    #Merge the score list with thier respective valid_word
-    result = list(map(lambda x, y:(x,y), wordscore.score_word(valid_words), valid_words))
+    # Merge the score list with thier respective valid_word
+    result = list(map(lambda x, y:(x,y), 
+             score_word(valid_words), 
+             valid_words))
     
-    #Print the results
-    for a, b in sorted(result, reverse=True): 
-        print(a, b)
-    
+    # Sort result from highest to lowest before return
+    return (sorted(result, reverse = True, 
+            key=lambda x: x[0]),
+            len(valid_words))
         
-def checkvalid(word, player_rack):
-    """This function processes which letters "word" can buy from the player_rack
-       In order for it to be a valid word, it must be able to buy all of it's letters
-       In essence this is a comparator of dictionarys. 
+def check_valid(word, player_rack):
+    """Implements a transactional test,
+       For each word in sowpods, it must be able to "buy" letters from the player_rack.
+       A wildcard allows sowpods words to buy any unmatched letter from the player_rack.  
     """    
-    total_wildcards = countwildcards(player_rack)
-    used_letters = []
+
+    # Count the occurences of wildcards in the player rack
+    # Create a dictionary of the letter occurences in the word.
+    total_wildcards = count_wilds(player_rack)
     word = dict(Counter(list(word.upper())))
     
-    #keep track of used keys()
-    
-    #Sum of wildcard values is less than or equal to unused_letters
-    #total_wildcards <= sum(used_letters.values())
-    
+    # Begin itteration through the word
     for count, letter in enumerate(word):
-        #check if letter is in the player rack at all, if is it must also be affordable by word   
-        #If the player_rack letter is a wildcard, 
-        if letter in player_rack.keys() and word[letter] <= player_rack[letter]:
-            if count == len(word)-1 and total_wildcards <= 0 :
+        #  If letter is in the player rack at all, if is it must also be affordable by word   
+        if (letter in player_rack.keys() and 
+                word[letter] <= player_rack[letter]):
+            #  See if we've reached the end of word and have run out of wildcards
+            if (count == len(word)-1 and 
+                    total_wildcards <= 0):
                 return True
-            
+
+        # If letter is not in the player rack at all, 
+        # see if there's a wildcard available to buy it with
         elif word[letter] <= total_wildcards:
             total_wildcards -= word[letter]
             if total_wildcards < 0: 
                 return False
             elif count == len(word) - 1:
                 return True
-        
+
+        #Catch all conition
         else:
             return False
 
-def countwildcards(player_rack):
-    
+def count_wilds(player_rack):
+    """Counts the number of wild cards in the player rack
+       Returns an integer"""
+
+    #Initialize total_wildcards and define wildcard characters   
     total_wildcards = 0
     wildcard = ["?", "*"]
 
+    # Iterate through letters in player_rack and add to total_wildcards
+    # when a match is found
     for letter in player_rack:
         if letter in wildcard:
             total_wildcards += player_rack[letter]
             
     return total_wildcards 
 
-def openfile(filename):
+def open_file(filename):
     """returns a list of filename contents"""    
     file_content = []
     
@@ -90,6 +99,4 @@ def openfile(filename):
     return file_content
 
 if __name__ == "__main__":
-    start_time = time.time()
-    main()
-    print("--- %s seconds ---" % (time.time() - start_time))
+    print(run_scrabble())
